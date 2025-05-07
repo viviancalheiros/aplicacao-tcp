@@ -8,18 +8,23 @@ port = 12000
 client = socket(AF_INET, SOCK_STREAM)
 client.connect((host, port))
 
-msg = client.recv(1024).decode()
-print(msg)
+inicio = client.recv(1024).decode()
+print(inicio)
 
 while True:
-    msg = client.recv(1024).decode()
-    print(msg)
-    op = input()
-    client.send(op.encode())
-    if op == '0':
+    opcao = client.recv(1024).decode()
+    print(opcao)
+    escolhido = input()
+    client.send(escolhido.encode())
+    if escolhido == '0':
         break
-    elif op == '1':
+    elif escolhido == '1':
+        perguntas = client.recv(1024).decode()
+        print(perguntas)
+        opcoes = client.recv(1024).decode()
+        print(opcoes)
         resp = input()
+        client.send(resp.encode())
 
 print('Conexão cliente encerrada')
 client.close()
