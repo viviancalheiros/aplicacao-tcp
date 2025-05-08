@@ -19,12 +19,23 @@ while True:
     if escolhido == '0':
         break
     elif escolhido == '1':
-        perguntas = client.recv(1024).decode()
-        print(perguntas)
-        opcoes = client.recv(1024).decode()
-        print(opcoes)
-        resp = input()
-        client.send(resp.encode())
+        for i in range(5):
+            pergunta = client.recv(1024).decode()
+            print(pergunta)
+            
+            resp = input()
+            client.send(resp.encode())
+        pontos = int(client.recv(1024).decode())
+        print("Fim do quiz...")
+        
+        if pontos == 5:
+            print("Você ganhou!")
+        elif pontos == 0:
+            print("Você perdeu!")
+        print(f"Pontuação total: {pontos} pontos\n")
+    elif escolhido == '2':
+        historico = client.recv(1024).decode()
+        print(historico)
 
 print('Conexão cliente encerrada')
 client.close()
