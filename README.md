@@ -3,7 +3,7 @@
 ## Indice
 
 + [🎯 Objetivo](#-objetivo)
-+ [⚙️ Como rodar](#-como-rodar)
++ [⚙️ Como rodar](#-⚙️-como-rodar)
 
 ---
 
