@@ -1,19 +1,22 @@
 #servidor
 
 from socket import *
+from threading import Thread
 import random
 
 host = gethostbyname(gethostname())
 port = 12000
 
-print(f'HOST: {host}, PORT {port}')
+print(f'HOST: {host}, PORT: {port}')
 
 #AF_INET = IPv4
 #SOCK_STREAM = TCP
 #SOCK_DGRAM = UDP
 server = socket(AF_INET, SOCK_STREAM)
-server.bind((host, port))
-server.listen(5)
+server.bind((host, port)) #associa o IP e a porta ao socket
+server.listen(5) #fica até 5 conexões na fila
+
+server.settimeout(60) #fecha o servidor após 1min sem conexão
 
 perguntas = [
     'Qual o nome do primeiro computador desenvolvido?',
@@ -40,12 +43,14 @@ opcoes = [
 ]
 respostas = ['1', '3', '2', '3', '4', '2', '4', '4', '1']
 
-historico = []
+historico = {}
         
-while True:
-    conn, addr = server.accept()
-    print("Servidor conectado!")
+def iniciarJogo (conn, addr):
+    client = f'{addr[0]} e porta: {addr[1]}'
+    historico[client] = []
+    print(f"Servidor conectado ao cliente {client}")
     conn.send('Quiz sobre tecnologia!'.encode())
+    
     while True:
         pontos = 0
         conn.send('1 - Iniciar quiz\n2 - Exibir histórico\n0 - Sair'.encode())
@@ -55,26 +60,34 @@ while True:
         elif escolhido == '1':
             print('Iniciando quiz...')
             indices = random.sample(range(len(perguntas)), 5)
+            cont = 1
             for i in indices:
-                pergunta = f'{perguntas[i]}\n' + '\n'.join(opcoes[i])
+                pergunta = f'{cont}) {perguntas[i]}\n' + '\n'.join(opcoes[i])
                 conn.send(pergunta.encode())
                 
                 resposta = conn.recv(1024).decode()
                 
                 if resposta == respostas[i]:
                     pontos += 1 
+                cont += 1
                 
-            if len(historico) >= 5:
-                del(historico[0])
+            if len(historico[client]) >= 5:
+                del(historico[client][0])
                 
-            historico.append(pontos)
+            historico[client].append(pontos)
             conn.send(str(pontos).encode())
-            
         elif escolhido == '2':
-            historico_format = ' | '.join(map(str, historico))
+            if (len(historico[client]) == 0): 
+                historico_format = 'Não há dados no histórico'
+            else: 
+                historico_format = ' | '.join(map(str, historico[client]))
             conn.send(historico_format.encode())
-    break
-
-print('Conexão servidor encerrada')
-conn.close()
-server.close()
+        else:
+            continue
+    conn.close()
+    print(f'Conexão servidor com cliente {client} encerrada')
+    
+while True:
+    conn, addr = server.accept()
+    thread = Thread(target = iniciarJogo, args = (conn, addr))
+    thread.start()

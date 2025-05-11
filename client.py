@@ -3,7 +3,7 @@
 from socket import *
 
 host = gethostbyname(gethostname())
-port = 12000
+port = 12000 #porta do servidor
 
 client = socket(AF_INET, SOCK_STREAM)
 client.connect((host, port))
@@ -36,6 +36,9 @@ while True:
     elif escolhido == '2':
         historico = client.recv(1024).decode()
         print(historico)
+    else:
+        print('Opção inválida. Tente novamente:')
+        continue
 
 print('Conexão cliente encerrada')
 client.close()
