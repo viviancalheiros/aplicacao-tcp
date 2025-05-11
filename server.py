@@ -14,9 +14,9 @@ print(f'HOST: {host}, PORT: {port}')
 #SOCK_DGRAM = UDP
 server = socket(AF_INET, SOCK_STREAM)
 server.bind((host, port)) #associa o IP e a porta ao socket
-server.listen(5) #fica até 5 conexões na fila
+server.listen(5) #fica com até 5 conexões na fila
 
-server.settimeout(60) #fecha o servidor após 1min sem conexão
+#server.settimeout(60) #fecha o servidor após 1 min sem conexão
 
 perguntas = [
     'Qual o nome do primeiro computador desenvolvido?',
@@ -46,9 +46,9 @@ respostas = ['1', '3', '2', '3', '4', '2', '4', '4', '1']
 historico = {}
         
 def iniciarJogo (conn, addr):
-    client = f'{addr[0]} e porta: {addr[1]}'
+    client = f'{addr[0]} e porta {addr[1]}'
     historico[client] = []
-    print(f"Servidor conectado ao cliente {client}")
+    print(f"[+] Servidor conectado ao cliente {client}")
     conn.send('Quiz sobre tecnologia!'.encode())
     
     while True:
